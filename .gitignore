@@ -1,2 +1,25 @@
 *.class
 *.log
+target/*
+
+# intellij idea
+/.idea/*
+*.log
+*.iml
+*.ipr
+*.iws
+
+# mac
+.DS_Store
+
+# scala project
+## bsp
+.bsp
+## intellij idea
+/scala/*/.idea/*
+## general
+/scala/*/*.class
+## sbt
+/scala/*/project/project/
+/scala/*/project/target/
+/scala/*/target/
