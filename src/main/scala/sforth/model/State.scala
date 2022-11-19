@@ -21,7 +21,9 @@ object State {
                    input: List[String],
                    status: Status) {
 
-    def abort: State = {
+    def abort: State = this.copy(status = Abort)
+    def abort(message: String): State = {
+      println(message)
       this.copy(status = Abort)
     }
 
@@ -32,8 +34,7 @@ object State {
     def look: State = {
       stack.headOption match {
         case None =>
-          println(s"Stack-underflow")
-          this.abort
+          this.stackUnderflow
         case Some(dataItem: DataItem) =>
           println(s"${dataItem.item}\t{${this.stackSize}}")
           this

@@ -31,9 +31,7 @@ object Compiler {
     val (newWordName, definition) = state.input.filterNot(_ == ":").filterNot(_ == ";").splitAt(1)
 
     validateDefinition(CompilerState(definition, "", List(), Valid)) match {
-      case CompilerState(_, invalidWord, _, Invalid) =>
-        println(s"Word $invalidWord is not defined")
-        state.abort
+      case CompilerState(_, invalidWord, _, Invalid) => state.abort(s"Word $invalidWord undefined")
       case CompilerState(_, _, validWordList, Valid) =>
         // create lambda from reverse definition word list
         val newWordFunction = (state: State) => {

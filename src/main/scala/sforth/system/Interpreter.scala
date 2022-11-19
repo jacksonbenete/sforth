@@ -8,9 +8,7 @@ object Interpreter {
 
   def parseWord(word: String, state: State): State = {
     word.toIntOption match {
-      case None =>
-        println(s"Word $word doesn't exists on dictionary or ${state.mark} namespace")
-        state.abort
+      case None => state.abort(s"Word $word doesn't exists on dictionary or ${state.mark} namespace")
       case Some(value) => state.push(DataItem(Number, value))
     }
   }
@@ -23,6 +21,7 @@ object Interpreter {
         // if state is corrupt, don't execute or parse any other word, but raise corrupt status
         case (_, Abort) => state
         case (_, Exit) => state
+        case (_, StackUnderflow) => state
         // if word doesn't exists on dictionary, parse it to put on Stack
         case (None, _) => parseWord(word, state)
         // if word exists on dictionary, evaluate function

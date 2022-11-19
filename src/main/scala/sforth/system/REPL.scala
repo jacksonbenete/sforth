@@ -17,8 +17,12 @@ object REPL {
     val read = readLine().strip()
     val input = read.split(" ").toList
 
-    val nextState = input.splitAt(1) match {
-      case (List(":"), _) => Compiler(state.copy(input = input))
+    val nextState = input match {
+      case "" :: Nil =>
+        println("\tok")
+        state
+      case ":" +: _ :+ ";" => Compiler(state.copy(input = input))
+      case ":" :: _ => state.abort("Missing compiler semicolon")
       case _ => Interpreter(state.copy(input = input))
     }
 
@@ -31,7 +35,9 @@ object REPL {
         nextState
       case Valid => REPL(nextState)
       case Failure => ???
-      case StackUnderflow => ???
+      case StackUnderflow =>
+        println("Stack-underflow")
+        REPL(state)
     }
   }
 
