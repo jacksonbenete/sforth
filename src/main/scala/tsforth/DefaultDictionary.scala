@@ -1,6 +1,6 @@
-package interpreter
+package tsforth
 
-import interpreter.DataStructures._
+import tsforth.DataStructures._
 
 object DefaultDictionary {
   def take2(state: State[Any]): (Any, Any, State[Any]) = {

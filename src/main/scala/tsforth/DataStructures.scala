@@ -1,4 +1,4 @@
-package interpreter
+package tsforth
 
 object DataStructures {
   case class Word[R](key: String, function: State[R] => State[R])
