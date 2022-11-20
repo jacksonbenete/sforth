@@ -22,7 +22,8 @@ object Dictionary {
     val plus = Word("+", (state: State) => {
       val (data1, data2, newState) = state.take2
       (data1, data2, newState.status) match {
-        case (_, _, Abort) => state
+        case (_, _, Abort) => state.abort
+        case (_, _, StackUnderflow) => state.stackUnderflow
         case (DataItem(Number, x: Int), DataItem(Number, y: Int), _) => newState.push(DataItem(Number, x + y))
         case (DataItem(Number, x), DataItem(Number, y), _) => state.abort(s"+ not implemented for types: ${x.getClass} and ${y.getClass}")
       }})
@@ -30,16 +31,18 @@ object Dictionary {
     val times = Word("*", (state: State) => {
       val (data1, data2, newState) = state.take2
       (data1, data2, newState.status) match {
-        case (_, _, Abort) => state
+        case (_, _, Abort) => state.abort
+        case (_, _, StackUnderflow) => state.stackUnderflow
         case (DataItem(Number, x: Int), DataItem(Number, y: Int), _) => newState.push(DataItem(Number, x * y))
         case (DataItem(Number, x), DataItem(Number, y), _) => state.abort(s"* not implemented for types: ${x.getClass} and ${y.getClass}")
       }
     })
-    
+
     val minus = Word("-", (state: State) => {
       val (data1, data2, newState) = state.take2
       (data1, data2, newState.status) match {
-        case (_, _, Abort) => state
+        case (_, _, Abort) => state.abort
+        case (_, _, StackUnderflow) => state.stackUnderflow
         case (DataItem(Number, x: Int), DataItem(Number, y: Int), _) => newState.push(DataItem(Number, y - x))
         case (DataItem(Number, x), DataItem(Number, y), _) => state.abort(s"- not implemented for types: ${x.getClass} and ${y.getClass}")
       }
@@ -48,7 +51,8 @@ object Dictionary {
     val divide = Word("/", (state: State) => {
       val (data1, data2, newState) = state.take2
       (data1, data2, newState.status) match {
-        case (_, _, Abort) => state
+        case (_, _, Abort) => state.abort
+        case (_, _, StackUnderflow) => state.stackUnderflow
         case (DataItem(Number, x: Int), DataItem(Number, y: Int), _) => newState.push(DataItem(Number, y / x))
         case (DataItem(Number, x), DataItem(Number, y), _) => state.abort(s"/ not implemented for types: ${x.getClass} and ${y.getClass}")
       }
@@ -65,7 +69,6 @@ object Dictionary {
 
     val look = Word(".s", (state: State) => {
       state.look
-      state
     })
 
     val dup = Word("dup", (state: State) => {
