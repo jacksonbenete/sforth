@@ -18,9 +18,7 @@ object REPL {
     val input = read.split(" ").toList
 
     val nextState = input match {
-      case "" :: Nil =>
-        println("\tok")
-        state
+      case "" :: Nil => state
       case ":" +: _ :+ ";" => Compiler(state.copy(input = input))
       case ":" :: _ => state.abort("Missing compiler semicolon")
       case _ => Interpreter(state.copy(input = input))
@@ -28,12 +26,15 @@ object REPL {
 
     nextState.status match {
       case Abort =>
+        println(nextState.io)
         println("Aborting and recovering last valid state...")
         REPL(state)
       case Exit =>
         println(s"Dump state: ${nextState.toString}")
         nextState
-      case Valid => REPL(nextState)
+      case Valid =>
+        println(s"${nextState.io}\tok")
+        REPL(nextState.copy(io = IO(List(""))))
       case Failure => ???
       case StackUnderflow =>
         println("Stack-underflow")
@@ -49,9 +50,10 @@ object REPL {
     val mark = ">"
     val namespace = Map[String, Dictionary]((mark, systemDictionary))
     val input = List[String]()
+    val io = IO(List())
     val status = Valid
 
-    val initialState = State(systemDictionary, stack, namespace, mark, input, status)
+    val initialState = State(systemDictionary, stack, namespace, mark, input, io, status)
 
     REPL(initialState)
   }

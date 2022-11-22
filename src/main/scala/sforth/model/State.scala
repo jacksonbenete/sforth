@@ -3,6 +3,16 @@ package sforth.model
 import sforth.model.Data.DataItem
 
 object State {
+  sealed trait IODevice
+  object StdOutput extends IODevice
+
+  case class IO(data: List[String], device: IODevice = StdOutput) {
+    override def toString: String = data.mkString(" ")
+  }
+  object IO {
+    def apply(data: String): IO = IO(List(data))
+  }
+
   object Status {
     sealed trait Status
     object Abort extends Status
@@ -19,13 +29,12 @@ object State {
                    namespace: Map[String, Dictionary],
                    mark: String, // mark current namespace
                    input: List[String],
+                   io: IO,
                    status: Status) {
+    def out(message: String) = this.copy(io = IO(message :: this.io.data))
 
     def abort: State = this.copy(status = Abort)
-    def abort(message: String): State = {
-      println(message)
-      this.copy(status = Abort)
-    }
+    def abort(message: String): State = this.copy(status = Abort, io = IO(message))
 
     def stackUnderflow: State = {
       this.copy(status = StackUnderflow)
@@ -35,9 +44,7 @@ object State {
       stack.headOption match {
         case None =>
           this.stackUnderflow
-        case Some(dataItem: DataItem) =>
-          println(s"${dataItem.item}\t{${this.stackSize}}")
-          this
+        case Some(dataItem: DataItem) => this.out(s"${dataItem.item}\t{${this.stackSize}}")
       }
     }
 

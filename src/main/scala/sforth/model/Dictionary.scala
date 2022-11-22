@@ -60,10 +60,8 @@ object Dictionary {
 
     val pop = Word(".", (state: State) => {
       state.pop() match {
-        case (dataItem: DataItem, newState@State(_, _, _, _, _, Valid)) =>
-          println(s"${dataItem.item}\t{${newState.stackSize}}")
-          newState
-        case (_: DataItem, newState@State(_, _, _, _, _, _)) => newState
+        case (dataItem: DataItem, newState@State(_, _, _, _, _, _, Valid)) => newState.out(s"${dataItem.item}\t{${newState.stackSize}}")
+        case (_: DataItem, newState@State(_, _, _, _, _, _, _)) => newState
       }
     })
 

@@ -13,6 +13,16 @@ class InterpreterSuite extends AnyFunSuite{
     assert(Interpreter(state).status == Valid)
   }
 
+  test("look should return the top of the stack and the stack size as a string") {
+    assert(mockInput("2 .s").io.data.mkString == "2\t{1}")
+    assert(mockInput("2 .s .s").io.data.mkString == "2\t{1}2\t{1}")
+  }
+
+  test("pop and other printing functions should successfully produce output") {
+    assert(mockInput("2 .").io.data.mkString == "2\t{0}")
+    assert(mockInput("2 2 2 . . .").io.data.mkString == "2\t{2}2\t{1}2\t{0}")
+  }
+
   test("eval a word with empty stack should return StackUnderflow status") {
     assert(mockInput("+").status == StackUnderflow)
     assert(mockInput(".").status == StackUnderflow)

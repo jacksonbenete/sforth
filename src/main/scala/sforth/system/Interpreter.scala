@@ -15,7 +15,7 @@ object Interpreter {
 
   def apply(state: State): State = {
     // for each word on input string
-    state.input.foldLeft(state: State) { (state: State, word: String) =>
+    val finalState = state.input.foldLeft(state: State) { (state: State, word: String) =>
       // see if word exists in dictionary
       (state.dictionary(word), state.status) match {
         // if state is corrupt, don't execute or parse any other word, but raise corrupt status
@@ -28,5 +28,7 @@ object Interpreter {
         case (Some(validWord), _) => validWord.function(state)
       }
     }
+    // clean state (e.g. reverse output list)
+    finalState.copy(io = IO(finalState.io.data.filter(!_.isEmpty).reverse))
   }
 }

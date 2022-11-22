@@ -1,7 +1,7 @@
 import sforth.model.Data.DataItem
 import sforth.model.Dictionary
-import sforth.model.State.State
-import sforth.model.State.Status.Valid
+import sforth.model.State.{IO, State}
+import sforth.model.State.Status._
 import sforth.system.REPL.REPL
 import sforth.system.{Compiler, Interpreter}
 
@@ -11,6 +11,7 @@ object TestUtils {
   private val mark = ">"
   private val namespace = Map[String, Dictionary]((mark, systemDictionary))
   private val input = List[String]()
+  private val io = IO(List())
   private val status = Valid
 
   sealed trait SubSystem
@@ -18,7 +19,7 @@ object TestUtils {
   object InterpreterSubSystem extends SubSystem
   object REPLSubSystem extends SubSystem
 
-  val initialState = State(systemDictionary, stack, namespace, mark, input, status)
+  val initialState = State(systemDictionary, stack, namespace, mark, input, io, status)
 
   def mockInput(string: String)(implicit state: State, subSystem: SubSystem): State = {
     val input = string.split(" ").toList
