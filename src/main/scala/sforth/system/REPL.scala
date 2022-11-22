@@ -17,6 +17,9 @@ object REPL {
     val read = readLine().strip()
     val input = read.split(" ").toList
 
+    // todo ":" should be a word
+    def compile = ???
+
     val nextState = input match {
       case "" :: Nil => state
       case ":" +: _ :+ ";" => Compiler(state.copy(input = input))

@@ -6,6 +6,7 @@ import sforth.model.State._
 import sforth.model.State.Status._
 
 object DataStructures {
+//  case class Word(name: String, glossary: String = "", function: State => State) { // TODO
   case class Word(name: String, function: State => State) {
     def load: Tuple2[String, Word] = (this.name, this)
   }

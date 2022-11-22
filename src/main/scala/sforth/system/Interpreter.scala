@@ -13,6 +13,13 @@ object Interpreter {
     }
   }
 
+  // todo this should be a word in the dictionary, scans the input stream looking for strings separated by spaces
+  def interpret = ???
+  // todo this should be a word in the dictionary, executes the definition of a word that has been found in dict
+  def execute = ???
+  // todo the number or number runner parse a word to number, should be a word
+  def number = ???
+
   def apply(state: State): State = {
     // for each word on input string
     val finalState = state.input.foldLeft(state: State) { (state: State, word: String) =>
