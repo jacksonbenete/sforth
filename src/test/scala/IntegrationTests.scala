@@ -1,4 +1,4 @@
-import TestUtils._
+import utils.TestUtils._
 import org.scalatest.funsuite.AnyFunSuite
 import sforth.model.Data._
 import sforth.model.State.Status.Valid
@@ -7,11 +7,10 @@ class IntegrationTests extends AnyFunSuite {
   implicit val state = initialState
 
   test("integration: define word in compiler and eval on interpreter") {
-    val compiler1 = mockInput(": square dup * exit ;")(state, CompilerSubSystem)
-    val eval1 = mockInput("3 square")(compiler1, InterpreterSubSystem)
-    assert(eval1.stack.head == DataItem(Number, 9))
-    val compiler2 = mockInput(": cube square square ;")(compiler1, CompilerSubSystem)
-    val eval2 = mockInput("3 cube")(compiler2, InterpreterSubSystem)
-    assert(eval2.stack.head == DataItem(Number, 81))
+    val result1 = Compiler(": square dup * exit ;").interpreter("3 square")
+    assert(result1.topStack == DataItem(Number, 9))
+
+    val result2 = Compiler(": cube square square ;").interpreter("3 cube")
+    assert(result2.topStack == DataItem(Number, 81))
   }
 }

@@ -8,6 +8,8 @@ object State {
 
   case class IO(data: List[String], device: IODevice = StdOutput) {
     override def toString: String = data.mkString(" ")
+    def raw: String = this.data.mkString
+    def debug: Unit = println(s">>>>\tIO data: ${this.data.mkString}\n>>>>\tIO device: ${this.device}")
   }
   object IO {
     def apply(data: String): IO = IO(List(data))
