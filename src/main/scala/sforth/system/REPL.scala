@@ -15,7 +15,7 @@ object REPL {
     print(s"${state.mark} ")
 
     val read = readLine().strip()
-    val input = read.split(" ").toList
+    val input = read.toLowerCase.split(" ").toList.filterNot(_.isEmpty)
 
     // todo ":" should be a word
     def compile = ???

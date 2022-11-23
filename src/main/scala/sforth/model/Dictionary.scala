@@ -21,25 +21,37 @@ object Dictionary {
   val systemDictionary: Dictionary = {
     val plusfn = { (state: State) =>
       val (x, y, newState) = state.take2()
-      newState.push(x.flatMap(x => y.map(y => x + y)))
+      x.flatMap(x => y.map(y => x + y)) match {
+        case None => newState.stackUnderflow
+        case value => newState.push(value)
+      }
     }
     val plus = Word("+", "(n1 n2 -- sum)", plusfn)
 
     val timesfn = { (state: State) =>
       val (x, y, newState) = state.take2()
-      newState.push(x.flatMap(x => y.map(y => x * y)))
+      x.flatMap(x => y.map(y => x * y)) match {
+        case None => newState.stackUnderflow
+        case value => newState.push(value)
+      }
     }
     val times = Word("*", "(n1 n2 -- mul)", timesfn)
 
     val minusfn = { (state: State) =>
       val (x, y, newState) = state.take2()
-      newState.push(x.flatMap(x => y.map(y => y - x)))
+      x.flatMap(x => y.map(y => y - x)) match {
+        case None => newState.stackUnderflow
+        case value => newState.push(value)
+      }
     }
     val minus = Word("-", "(n1 n2 -- sub)", minusfn)
 
     val divfun = { (state: State) =>
       val (x, y, newState) = state.take2()
-      newState.push(x.flatMap(x => y.map(y => y / x)))
+      x.flatMap(x => y.map(y => y / x)) match {
+        case None => newState.stackUnderflow
+        case value => newState.push(value)
+      }
     }
     val divide = Word("/", "(n1 n2 -- div", divfun)
 
@@ -75,6 +87,27 @@ object Dictionary {
       state.copy(status = Exit)
     })
 
+    // Chapter 1
+    val spacesfn = { (state: State) =>
+      val (x, newState) = state.pop()
+      x match {
+        case Some(value) => List.range(0, value).foldLeft(newState){ (state, _) => state.out(" ") }
+        case None => newState
+      }
+    }
+    val spaces = Word("spaces", "(n -- )", spacesfn)
+
+    val emitfn = { (state: State) =>
+      val (x, newState) = state.pop()
+      x match {
+        case Some(value) => newState.out(value.toChar.toString)
+        case None => newState
+      }
+    }
+    val emit = Word("emit", "(c -- )", emitfn)
+
+    val cr = Word("cr", "( -- )", (state: State) => { state.out("\r\n") })
+
     Dictionary(Map[String, Word](
       plus.load,
       minus.load,
@@ -84,7 +117,10 @@ object Dictionary {
       look.load,
       dup.load,
       see.load,
-      exit.load
+      exit.load,
+      spaces.load,
+      emit.load,
+      cr.load
     ))
   }
 }

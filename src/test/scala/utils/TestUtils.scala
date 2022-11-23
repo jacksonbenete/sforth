@@ -15,14 +15,18 @@ object TestUtils {
 
   val initialState = State(systemDictionary, stack, namespace, mark, input, io, status)
 
+  def parseInput(string: String): List[String] = {
+    string.toLowerCase.split(" ").toList.filterNot(_.isEmpty)
+  }
+
   case class Engine(string: String, state: State) {
     def interpreter(string: String): Engine = {
-      val nextState = sforth.system.Interpreter(state.copy(input = string.split(" ").toList))
+      val nextState = sforth.system.Interpreter(state.copy(input = parseInput(string)))
       Engine(string, nextState)
     }
 
     def compiler(string: String): Engine = {
-      val nextState = sforth.system.Compiler(state.copy(input = string.split(" ").toList))
+      val nextState = sforth.system.Compiler(state.copy(input = parseInput(string)))
       Engine(string, nextState)
     }
 
@@ -37,13 +41,13 @@ object TestUtils {
   }
   object Compiler {
     def apply(string: String)(implicit state: State = initialState): Engine = {
-      val nextState = sforth.system.Compiler(state.copy(input = string.split(" ").toList))
+      val nextState = sforth.system.Compiler(state.copy(input = parseInput(string)))
       Engine(string, nextState)
     }
   }
   object Interpreter {
     def apply(string: String)(implicit state: State = initialState): Engine = {
-      val nextState = sforth.system.Interpreter(state.copy(input = string.split(" ").toList))
+      val nextState = sforth.system.Interpreter(state.copy(input = parseInput(string)))
       Engine(string, nextState)
     }
   }

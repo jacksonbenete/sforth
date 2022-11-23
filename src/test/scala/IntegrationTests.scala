@@ -7,10 +7,10 @@ class IntegrationTests extends AnyFunSuite {
   implicit val state = initialState
 
   test("integration: define word in compiler and eval on interpreter") {
-    val result1 = Compiler(": square dup * exit ;").interpreter("3 square")
+    val result1 = Compiler(": square dup * ;").interpreter("3 square")
     assert(result1.topStack == 9)
 
-    val result2 = Compiler(": cube square square ;").interpreter("3 cube")
+    val result2 = result1.compiler(": cube square square ;").interpreter("3 cube")
     assert(result2.topStack == 81)
   }
 }

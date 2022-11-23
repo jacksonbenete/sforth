@@ -18,17 +18,16 @@ class Chapter1 extends AnyFunSuite{
     assert(Interpreter("15 spaces 42 emit 42 emit").output == "               **")
 
     // words and numbers could be separate with as many spaces as wanted for clarity
-    val addStar = Compiler("star   42 emit")
+    val addStar = Compiler(": star   42 emit ;")
     assert(addStar.dictionary.dict.size > state.dictionary.dict.size)
     assert(Interpreter("  2  2  2  +  +  ").topStack == 6)
 
     assert(addStar.interpreter("CR STAR CR STAR CR STAR").output == "\r\n*\r\n*\r\n*")
 
     val addMargin = addStar.compiler(": MARGIN CR 30 SPACES ;")
-    assert(
-      addMargin.interpreter("MARGIN STAR MARGIN STAR MARGIN STAR") ==
-        addMargin.interpreter("CR STAR CR STAR CR STAR"))
+    assert(addMargin.interpreter("MARGIN STAR").output == "\r\n                              *")
 
+    // TODO implement LOOP
     val addBlip = addMargin.compiler(": BLIP   MARGIN STAR ;")
     val addStars = addBlip.compiler(": STARS O DO STAR LOOP ;")
     assert(addStars.interpreter("5 stars").output == "*****")

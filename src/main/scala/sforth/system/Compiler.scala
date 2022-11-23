@@ -18,12 +18,23 @@ object Compiler {
     // validate if all words in definition are valid
     @tailrec
     def validateDefinition(compilerState: CompilerState): CompilerState = {
+      // todo numberRunner should be a word "number"
+      def numberRunner(word: String): Option[Word] = {
+        word.toIntOption match {
+          case None => None
+          case value => Option(Word("number", "", (state: State) => state.push(value)))
+        }
+      }
       compilerState match {
         case CompilerState(_, _, _, Invalid) => compilerState
         case CompilerState(Nil, _, _, Valid) => compilerState
         case CompilerState(word :: tail, _, validWordList, Valid) => state.dictionary(word) match {
           case Some(validWord) => validateDefinition(CompilerState(tail, "", validWord :: validWordList  ,Valid))
-          case None => validateDefinition(CompilerState(Nil, word, validWordList, Invalid))
+          case None =>
+            numberRunner(word) match {
+              case Some(validWord) => validateDefinition(CompilerState(tail, "", validWord :: validWordList  ,Valid))
+              case None => validateDefinition(CompilerState(Nil, word, validWordList, Invalid))
+            }
         }
       }
     }
