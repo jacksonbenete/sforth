@@ -28,10 +28,12 @@ object TestUtils {
     }
 
     def io: IO = this.state.io
+    def output: String = this.state.io.raw
     def status: Status = this.state.status
     def stack: List[DataItem] = this.state.stack
     def topStack: DataItem = stack.head
     def dictionary: Dictionary = this.state.dictionary
+    def stackSize: Int = this.state.stackSize
 
   }
   object Compiler {
