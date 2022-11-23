@@ -9,7 +9,7 @@ object Interpreter {
   def parseWord(word: String, state: State): State = {
     word.toIntOption match {
       case None => state.abort(s"Word $word doesn't exists on dictionary or ${state.mark} namespace")
-      case Some(value) => state.push(DataItem(Number, value))
+      case data => state.push(data)
     }
   }
 

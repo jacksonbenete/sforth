@@ -1,13 +1,12 @@
 package utils
 
-import sforth.model.Data.DataItem
 import sforth.model.Dictionary
 import sforth.model.State.Status._
 import sforth.model.State.{IO, State}
 
 object TestUtils {
   private val systemDictionary = Dictionary.systemDictionary
-  private val stack = List[DataItem]()
+  private val stack = List[Int]()
   private val mark = ">"
   private val namespace = Map[String, Dictionary]((mark, systemDictionary))
   private val input = List[String]()
@@ -30,8 +29,8 @@ object TestUtils {
     def io: IO = this.state.io
     def output: String = this.state.io.raw
     def status: Status = this.state.status
-    def stack: List[DataItem] = this.state.stack
-    def topStack: DataItem = stack.head
+    def stack: List[Int] = this.state.stack
+    def topStack: Int = stack.head
     def dictionary: Dictionary = this.state.dictionary
     def stackSize: Int = this.state.stackSize
 

@@ -1,6 +1,6 @@
 package starting_forth
 import org.scalatest.funsuite.AnyFunSuite
-import sforth.model.Data.{DataItem, Number}
+import sforth.model.Data.{Number}
 import sforth.model.State.Status._
 import utils.TestUtils._
 
@@ -20,7 +20,7 @@ class Chapter1 extends AnyFunSuite{
     // words and numbers could be separate with as many spaces as wanted for clarity
     val addStar = Compiler("star   42 emit")
     assert(addStar.dictionary.dict.size > state.dictionary.dict.size)
-    assert(Interpreter("  2  2  2  +  +  ").topStack == DataItem(Number, 6))
+    assert(Interpreter("  2  2  2  +  +  ").topStack == 6)
 
     assert(addStar.interpreter("CR STAR CR STAR CR STAR").output == "\r\n*\r\n*\r\n*")
 
@@ -49,7 +49,7 @@ class Chapter1 extends AnyFunSuite{
 
   test("pg.19 The Stack: FORTH's Worksite for Arithmetic") {
     val addState = Interpreter("3 4 +")
-    assert(addState.topStack == DataItem(Number, 7))
+    assert(addState.topStack == 7)
     assert(addState.stackSize == 1)
 
     val dot = Interpreter("7 .")
@@ -85,7 +85,7 @@ class Chapter1 extends AnyFunSuite{
 
     // 2. subtract using +
     val thenLess = Compiler(": then.less -10 + ;")
-    assert(thenLess.interpreter("11 then.less").topStack == DataItem(Number, 1))
+    assert(thenLess.interpreter("11 then.less").topStack == 1)
 
     // 3. redefining a word should be possible, but other words should retain previous definition
     val problem2 = problem1.compiler(": giver .\" Alphonse \" ;")

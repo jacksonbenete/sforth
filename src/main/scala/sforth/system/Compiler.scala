@@ -40,7 +40,7 @@ object Compiler {
           }
         }
         // return new state with new word and updated dictionary
-        val newWord = Word(newWordName.head, newWordFunction)
+        val newWord = Word(newWordName.head, "//TODO", newWordFunction)
         val newDictionary = Map[String, Word]((newWord.name, newWord)) ++ state.dictionary.dict
         state.copy(dictionary = Dictionary(newDictionary))
     }

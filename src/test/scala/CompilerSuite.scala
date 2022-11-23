@@ -12,6 +12,6 @@ class CompilerSuite extends AnyFunSuite {
 
   test("composing words to test TestEngine") {
     val stateResult = Compiler(": square dup * ;").compiler(": cube square square ;").interpreter("3 cube")
-    assert(stateResult.topStack == DataItem(Number, 81))
+    assert(stateResult.topStack == 81)
   }
 }

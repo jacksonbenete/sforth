@@ -1,7 +1,5 @@
 package sforth.model
 
-import sforth.model.Data.DataItem
-
 object State {
   sealed trait IODevice
   object StdOutput extends IODevice
@@ -27,7 +25,7 @@ object State {
   import sforth.model.State.Status._
 
   case class State(dictionary: Dictionary,
-                   stack: List[DataItem],
+                   stack: List[Int],
                    namespace: Map[String, Dictionary],
                    mark: String, // mark current namespace
                    input: List[String],
@@ -46,30 +44,32 @@ object State {
       stack.headOption match {
         case None =>
           this.stackUnderflow
-        case Some(dataItem: DataItem) => this.out(s"${dataItem.item}\t{${this.stackSize}}")
+        case Some(data) => this.out(s"$data\t{${this.stackSize}}")
       }
     }
 
     def stackSize: Int = this.stack.size
 
-    def push(value: DataItem): State = {
-      this.copy(stack = value :: stack)
-    }
-
-    def pop(): (DataItem, State) = {
-      this.stack.headOption match {
-        case None => (DataItem.empty(), this.stackUnderflow)
-        case Some(value) => (value, this.copy(stack = stack.tail))
+    def push(value: Option[Int]): State = {
+      value match {
+        case Some(value) => this.copy(stack = value :: stack)
+        case None => this.abort
       }
     }
 
-    def take2(): (DataItem, DataItem, State) = {
-      val (data1, state1) = pop()
-      val (data2, state2) = state1.pop()
-      state2.status match {
-        case Abort => (DataItem.empty(), DataItem.empty(), this.abort)
-        case StackUnderflow => (DataItem.empty(), DataItem.empty(), this.stackUnderflow)
-        case _ => (data1, data2, state2)
+    def pop(): (Option[Int], State) = this.stack.headOption match {
+      case None => (None, this.stackUnderflow)
+      case value => (value, this.copy(stack = stack.tail))
+    }
+
+    def take2(): (Option[Int], Option[Int], State) = {
+      if (this.stackSize < 2) {
+        val empty = None: Option[Int]
+        (empty, empty, this.stackUnderflow)
+      } else {
+        val (data1, state1) = pop()
+        val (data2, state2) = state1.pop()
+        (data1, data2, state2)
       }
     }
   }

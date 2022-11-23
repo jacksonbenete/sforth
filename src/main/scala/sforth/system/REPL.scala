@@ -49,7 +49,7 @@ object REPL {
     println(s"Starting $IMPLEMENTATION v$VERSION...")
 
     val systemDictionary = Dictionary.systemDictionary
-    val stack = List[DataItem]()
+    val stack = List[Int]()
     val mark = ">"
     val namespace = Map[String, Dictionary]((mark, systemDictionary))
     val input = List[String]()

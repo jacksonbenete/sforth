@@ -6,8 +6,7 @@ import sforth.model.State._
 import sforth.model.State.Status._
 
 object DataStructures {
-//  case class Word(name: String, glossary: String = "", function: State => State) { // TODO
-  case class Word(name: String, function: State => State) {
+  case class Word(name: String, glossary: String = "", function: State => State) {
     def load: Tuple2[String, Word] = (this.name, this)
   }
 }
@@ -20,66 +19,51 @@ case class Dictionary(dict: Map[String, Word]) {
 
 object Dictionary {
   val systemDictionary: Dictionary = {
-    val plus = Word("+", (state: State) => {
-      val (data1, data2, newState) = state.take2
-      (data1, data2, newState.status) match {
-        case (_, _, Abort) => state.abort
-        case (_, _, StackUnderflow) => state.stackUnderflow
-        case (DataItem(Number, x: Int), DataItem(Number, y: Int), _) => newState.push(DataItem(Number, x + y))
-        case (DataItem(Number, x), DataItem(Number, y), _) => state.abort(s"+ not implemented for types: ${x.getClass} and ${y.getClass}")
-      }})
+    val plusfn = { (state: State) =>
+      val (x, y, newState) = state.take2()
+      newState.push(x.flatMap(x => y.map(y => x + y)))
+    }
+    val plus = Word("+", "(n1 n2 -- sum)", plusfn)
 
-    val times = Word("*", (state: State) => {
-      val (data1, data2, newState) = state.take2
-      (data1, data2, newState.status) match {
-        case (_, _, Abort) => state.abort
-        case (_, _, StackUnderflow) => state.stackUnderflow
-        case (DataItem(Number, x: Int), DataItem(Number, y: Int), _) => newState.push(DataItem(Number, x * y))
-        case (DataItem(Number, x), DataItem(Number, y), _) => state.abort(s"* not implemented for types: ${x.getClass} and ${y.getClass}")
-      }
-    })
+    val timesfn = { (state: State) =>
+      val (x, y, newState) = state.take2()
+      newState.push(x.flatMap(x => y.map(y => x * y)))
+    }
+    val times = Word("*", "(n1 n2 -- mul)", timesfn)
 
-    val minus = Word("-", (state: State) => {
-      val (data1, data2, newState) = state.take2
-      (data1, data2, newState.status) match {
-        case (_, _, Abort) => state.abort
-        case (_, _, StackUnderflow) => state.stackUnderflow
-        case (DataItem(Number, x: Int), DataItem(Number, y: Int), _) => newState.push(DataItem(Number, y - x))
-        case (DataItem(Number, x), DataItem(Number, y), _) => state.abort(s"- not implemented for types: ${x.getClass} and ${y.getClass}")
-      }
-    })
+    val minusfn = { (state: State) =>
+      val (x, y, newState) = state.take2()
+      newState.push(x.flatMap(x => y.map(y => y - x)))
+    }
+    val minus = Word("-", "(n1 n2 -- sub)", minusfn)
 
-    val divide = Word("/", (state: State) => {
-      val (data1, data2, newState) = state.take2
-      (data1, data2, newState.status) match {
-        case (_, _, Abort) => state.abort
-        case (_, _, StackUnderflow) => state.stackUnderflow
-        case (DataItem(Number, x: Int), DataItem(Number, y: Int), _) => newState.push(DataItem(Number, y / x))
-        case (DataItem(Number, x), DataItem(Number, y), _) => state.abort(s"/ not implemented for types: ${x.getClass} and ${y.getClass}")
-      }
-    })
+    val divfun = { (state: State) =>
+      val (x, y, newState) = state.take2()
+      newState.push(x.flatMap(x => y.map(y => y / x)))
+    }
+    val divide = Word("/", "(n1 n2 -- div", divfun)
 
-    val pop = Word(".", (state: State) => {
+    val pop = Word(".", "(n -- )", (state: State) => {
       state.pop() match {
-        case (dataItem: DataItem, newState@State(_, _, _, _, _, _, Valid)) => newState.out(s"${dataItem.item}\t{${newState.stackSize}}")
-        case (_: DataItem, newState@State(_, _, _, _, _, _, _)) => newState
+        case (Some(data), newState@State(_, _, _, _, _, _, Valid)) => newState.out(s"${data}\t{${newState.stackSize}}")
+        case (_, newState@_) => newState
       }
     })
 
-    val look = Word(".s", (state: State) => {
+    val look = Word(".s", "( -- )", (state: State) => {
       state.look
     })
 
-    val dup = Word("dup", (state: State) => {
+    val dup = Word("dup", "(n -- n1 n2)", (state: State) => {
       state.stack.headOption match {
         case None =>
           state.stackUnderflow
-        case Some(dataItem: DataItem) =>
-          state.push(dataItem)
+        case data =>
+          state.push(data)
       }
     })
 
-    val see = Word("see", (state: State) => {
+    val see = Word("see", "( -- )", (state: State) => {
       val word = state.input.last
       state.dictionary(word) match {
         case Some(word) => state.abort(s"${word.function}")
@@ -87,7 +71,7 @@ object Dictionary {
       }
     })
 
-    val exit = Word("exit", (state: State) => {
+    val exit = Word("exit", "( -- )", (state: State) => {
       state.copy(status = Exit)
     })
 

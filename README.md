@@ -14,6 +14,7 @@ and ideas contained.
 
 - TSForth v0.1
 - SForth v0.1
+- SForth v0.2
 
 ## TSForth
 TSForth was the first implementation attempt.
@@ -32,6 +33,44 @@ Written from scratch, but with lessons learned from TSForth v0.1.
 The initial idea is to have to write less type parameters all the type which
 made everything quite troublesome in TSForth without really helping
 on safety.
+
+### Sforth v0.2
+This version started being implemented right after I started reading "Starting Forth".
+
+v0.1 had a State designed this way:
+```scala
+State(dictionary: Dictionary,
+                   stack: List[DataItem],
+                   namespace: Map[String, Dictionary],
+                   mark: String, // mark current namespace
+                   input: List[String],
+                   io: IO,
+                   status: Status)
+```
+
+Were the Stack was a List of "DataItem", and DataItem is the data structure following:
+```scala
+object Data {
+  trait DataType
+  object Number extends DataType
+  object Literal extends DataType
+  object Word extends DataType
+  object Empty extends DataType
+  object Invalid extends DataType
+
+  case class DataItem(dataType: DataType, item: Any)
+  object DataItem {
+    def empty(): DataItem = DataItem(Empty, None)
+  }
+}
+```
+
+I had this first idea of a Stack were we could persist data of different types.
+
+This is an over-engineering and makes things difficult without really helping with anything.
+
+In Forth the Stack represents only a LIFO structure of Numbers. Variables, Strings and other Data Types aren't included on the Stack.
+
 
 ## Ideas
 

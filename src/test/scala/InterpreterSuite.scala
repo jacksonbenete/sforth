@@ -29,7 +29,7 @@ class InterpreterSuite extends AnyFunSuite{
   }
 
   test("exit should exit right away") {
-    assert(Interpreter("2 2 2 + +").topStack == DataItem(Number, 6))
-    assert(Interpreter("2 2 + exit 2 +").topStack != DataItem(Number, 6))
+    assert(Interpreter("2 2 2 + +").topStack == 6)
+    assert(Interpreter("2 2 + exit 2 +").topStack != 6)
   }
 }
