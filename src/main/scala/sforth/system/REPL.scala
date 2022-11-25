@@ -50,13 +50,14 @@ object REPL {
 
     val systemDictionary = Dictionary.systemDictionary
     val stack = List[Int]()
+    val registers = Registers()
     val mark = ">"
     val namespace = Map[String, Dictionary]((mark, systemDictionary))
     val input = List[String]()
     val io = IO(List())
     val status = Valid
 
-    val initialState = State(systemDictionary, stack, namespace, mark, input, io, status)
+    val initialState = State(systemDictionary, stack, registers, namespace, mark, input, io, status)
 
     REPL(initialState)
   }

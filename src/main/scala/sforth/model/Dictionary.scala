@@ -57,7 +57,7 @@ object Dictionary {
 
     val pop = Word(".", "(n -- )", (state: State) => {
       state.pop() match {
-        case (Some(data), newState@State(_, _, _, _, _, _, Valid)) => newState.out(s"${data}\t{${newState.stackSize}}")
+        case (Some(data), newState@State(_, _, _, _, _, _, _, Valid)) => newState.out(s"${data}\t{${newState.stackSize}}")
         case (_, newState@_) => newState
       }
     })

@@ -2,18 +2,19 @@ package utils
 
 import sforth.model.Dictionary
 import sforth.model.State.Status._
-import sforth.model.State.{IO, State}
+import sforth.model.State.{IO, Registers, State}
 
 object TestUtils {
   private val systemDictionary = Dictionary.systemDictionary
   private val stack = List[Int]()
+  private val registers = Registers()
   private val mark = ">"
   private val namespace = Map[String, Dictionary]((mark, systemDictionary))
   private val input = List[String]()
   private val io = IO(List())
   private val status = Valid
 
-  val initialState = State(systemDictionary, stack, namespace, mark, input, io, status)
+  val initialState = State(systemDictionary, stack, registers, namespace, mark, input, io, status)
 
   def parseInput(string: String): List[String] = {
     string.toLowerCase.split(" ").toList.filterNot(_.isEmpty)

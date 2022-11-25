@@ -13,6 +13,8 @@ object State {
     def apply(data: String): IO = IO(List(data))
   }
 
+  case class Registers(counterLoop: Int = 0)
+
   object Status {
     sealed trait Status
     object Abort extends Status
@@ -26,6 +28,7 @@ object State {
 
   case class State(dictionary: Dictionary,
                    stack: List[Int],
+                   registers: Registers,
                    namespace: Map[String, Dictionary],
                    mark: String, // mark current namespace
                    input: List[String],
