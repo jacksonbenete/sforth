@@ -12,13 +12,13 @@ class InterpreterSuite extends AnyFunSuite{
   }
 
   test("look should return the top of the stack and the stack size as a string") {
-    assert(Interpreter("2 .s").io.raw == "2\t{1}")
-    assert(Interpreter("2 .s .s").io.raw == "2\t{1}2\t{1}")
+    assert(Interpreter("2 .s").io.raw == "2\t{1}\tok")
+    assert(Interpreter("2 .s .s").io.raw == "2\t{1}2\t{1}\tok")
   }
 
   test("pop and other printing functions should successfully produce output") {
-    assert(Interpreter("2 .").io.raw == "2\t{0}")
-    assert(Interpreter("2 2 2 . . .").io.raw == "2\t{2}2\t{1}2\t{0}")
+    assert(Interpreter("2 .").io.raw == "2\t{0}\tok")
+    assert(Interpreter("2 2 2 . . .").io.raw == "2\t{2}2\t{1}2\t{0}\tok")
   }
 
   test("eval a word with empty stack should return StackUnderflow status") {

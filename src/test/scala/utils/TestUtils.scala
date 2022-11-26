@@ -21,34 +21,28 @@ object TestUtils {
   }
 
   case class Engine(string: String, state: State) {
-    def interpreter(string: String): Engine = {
-      val nextState = sforth.system.Interpreter(state.copy(input = parseInput(string)))
-      Engine(string, nextState)
-    }
+    def interpreter(string: String): Engine = Interpreter(string)
 
-    def compiler(string: String): Engine = {
-      val nextState = sforth.system.Compiler(state.copy(input = parseInput(string)))
-      Engine(string, nextState)
-    }
+    def compiler(string: String): Engine = Compiler(string)
 
     def io: IO = this.state.io
-    def output: String = this.state.io.raw
+    def output: String = this.state.io.raw.replace("\tok", "")
     def status: Status = this.state.status
     def stack: List[Int] = this.state.stack
-    def topStack: Int = stack.head
+    def topStack: Int = this.stack.head
     def dictionary: Dictionary = this.state.dictionary
     def stackSize: Int = this.state.stackSize
 
   }
   object Compiler {
     def apply(string: String)(implicit state: State = initialState): Engine = {
-      val nextState = sforth.system.Compiler(state.copy(input = parseInput(string)))
+      val nextState = sforth.system.Compiler(state.compileMode.copy(input = parseInput(string)))
       Engine(string, nextState)
     }
   }
   object Interpreter {
     def apply(string: String)(implicit state: State = initialState): Engine = {
-      val nextState = sforth.system.Interpreter(state.copy(input = parseInput(string)))
+      val nextState = sforth.system.Interpreter(state.interpretMode.copy(input = parseInput(string)))
       Engine(string, nextState)
     }
   }

@@ -4,9 +4,15 @@ import sforth.model.DataStructures.Word
 import sforth.model.Data._
 import sforth.model.State._
 import sforth.model.State.Status._
+import sforth.system.{Compiler, Executor, Interpreter, NumberRunner}
 
 object DataStructures {
   case class Word(name: String, glossary: String = "", function: State => State) {
+    /**
+     * Returns a tuple in a valid format for the Dictionary.
+     *
+     * @return a new entry of type Map[String, Word]
+     */
     def load: Tuple2[String, Word] = (this.name, this)
   }
 }
@@ -19,6 +25,15 @@ case class Dictionary(dict: Map[String, Word]) {
 
 object Dictionary {
   val systemDictionary: Dictionary = {
+    val interpret = Word("interpret", "Enters Interpret Mode",
+      (state: State) => Interpreter(state.interpretMode))
+    val compile = Word(":", "Enters Compile Mode",
+      (state: State) => Compiler(state.compileMode))
+    val number = Word("number", "Number-runner",
+      (state: State) => NumberRunner(state))
+    val execute = Word("execute", "Execute the definition of a word",
+      (state: State) => Executor(state))
+
     val plusfn = { (state: State) =>
       val (x, y, newState) = state.take2()
       x.flatMap(x => y.map(y => x + y)) match {
@@ -55,10 +70,12 @@ object Dictionary {
     }
     val divide = Word("/", "(n1 n2 -- div", divfun)
 
-    val pop = Word(".", "(n -- )", (state: State) => {
-      state.pop() match {
-        case (Some(data), newState@State(_, _, _, _, _, _, _, Valid)) => newState.out(s"${data}\t{${newState.stackSize}}")
-        case (_, newState@_) => newState
+    val dot = Word(".", "(n -- )", (state: State) => {
+      val (data, nextState) = state.pop()
+      (data, nextState.status) match {
+        case (Some(data), InterpretMode) => nextState.out(s"${data}\t{${nextState.stackSize}}")
+        case (Some(data), CompileMode) => nextState.out(s"${data}\t{${nextState.stackSize}}")
+        case (_, _) => nextState
       }
     })
 
@@ -108,19 +125,26 @@ object Dictionary {
 
     val cr = Word("cr", "( -- )", (state: State) => { state.out("\r\n") })
 
+    val debug = Word("debug", "( -- )", (state: State) => { state.abort(s"DUMP: ${state.toString}") })
+
     Dictionary(Map[String, Word](
+      interpret.load,
+      compile.load,
+      number.load,
+      execute.load,
       plus.load,
       minus.load,
       times.load,
       divide.load,
-      pop.load,
+      dot.load,
       look.load,
       dup.load,
       see.load,
       exit.load,
       spaces.load,
       emit.load,
-      cr.load
+      cr.load,
+      debug.load
     ))
   }
 }

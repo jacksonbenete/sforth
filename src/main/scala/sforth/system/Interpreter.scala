@@ -5,37 +5,31 @@ import sforth.model.State.Status._
 import sforth.model.Data._
 
 object Interpreter {
-
-  def parseWord(word: String, state: State): State = {
-    word.toIntOption match {
-      case None => state.abort(s"Word $word doesn't exists on dictionary or ${state.mark} namespace")
-      case data => state.push(data)
-    }
-  }
-
-  // todo this should be a word in the dictionary, scans the input stream looking for strings separated by spaces
-  def interpret = ???
-  // todo this should be a word in the dictionary, executes the definition of a word that has been found in dict
-  def execute = ???
-  // todo the number or number runner parse a word to number, should be a word
-  def number = ???
-
+  /**
+   * Implemented following "Starting Forth" pg. 15.
+   *
+   * The text interpreter (a very elegant gentleman) scans
+   * the input stream, looking for strings separated by spaces.
+   *
+   * Looks for the string in the Dictionary, and either gives
+   * it for the Executor or the NumberRunner.
+   *
+   * @param state
+   * @return State with updated status and IO for effect
+   */
   def apply(state: State): State = {
-    // for each word on input string
     val finalState = state.input.foldLeft(state: State) { (state: State, word: String) =>
-      // see if word exists in dictionary
       (state.dictionary(word), state.status) match {
-        // if state is corrupt, don't execute or parse any other word, but raise corrupt status
-        case (_, Abort) => state
-        case (_, Exit) => state
-        case (_, StackUnderflow) => state
-        // if word doesn't exists on dictionary, parse it to put on Stack
-        case (None, _) => parseWord(word, state)
-        // if word exists on dictionary, evaluate function
-        case (Some(validWord), _) => validWord.function(state)
+        case (Some(validWord), InterpretMode) => Executor(state.copy(registers = state.registers.word(validWord)))
+        case (None, InterpretMode) => NumberRunner(state.copy(registers = state.registers.input(word)))
+        case _ => state
       }
     }
-    // clean state (e.g. reverse output list)
-    finalState.copy(io = IO(finalState.io.data.filter(!_.isEmpty).reverse))
+
+    finalState.status match {
+      // If it was still Interpreting until this point, clean and return as Valid State
+      case InterpretMode => finalState.out("\tok").cleanState.valid
+      case state => finalState
+    }
   }
 }
