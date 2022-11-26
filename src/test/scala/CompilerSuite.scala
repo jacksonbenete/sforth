@@ -7,7 +7,7 @@ class CompilerSuite extends AnyFunSuite {
   implicit val state = initialState
 
   test("define square word") {
-    assert(Compiler("square dup *").dictionary.dict.size > state.dictionary.dict.size)
+    assert(Compiler(": square dup * ;").dictionary.dict.size > state.dictionary.dict.size)
   }
 
   test("composing words to test TestEngine") {

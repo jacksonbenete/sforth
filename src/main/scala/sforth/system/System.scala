@@ -13,9 +13,8 @@ object System {
   val IMPLEMENTATION = "SForth"
   val VERSION = "0.2"
 
-  private def parseInputFromReadLine(string: String) =
+  def parseInputFromReadLine(string: String): List[String] =
     string.strip().toLowerCase.split(" ").toList.filterNot(_.isEmpty)
-
   @tailrec
   def REPL(state: State): State = {
     val read = readLine(s"${state.mark} ")

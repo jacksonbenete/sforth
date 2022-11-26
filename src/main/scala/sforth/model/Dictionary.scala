@@ -7,13 +7,21 @@ import sforth.model.State.Status._
 import sforth.system.{Compiler, Executor, Interpreter, NumberRunner}
 
 object DataStructures {
-  case class Word(name: String, glossary: String = "", function: State => State) {
+  case class Word(name: String, glossary: String = "", function: State => State, definition: String = "") {
     /**
      * Returns a tuple in a valid format for the Dictionary.
      *
      * @return a new entry of type Map[String, Word]
      */
     def load: Tuple2[String, Word] = (this.name, this)
+
+    override def toString: String =
+      s"""
+         |Name: $name
+         |Glosary: $glossary
+         |Definition: $definition
+         |Function: $function
+         |""".stripMargin
   }
 }
 
@@ -29,8 +37,13 @@ object Dictionary {
       (state: State) => Interpreter(state.interpretMode))
     val compile = Word(":", "Enters Compile Mode",
       (state: State) => Compiler(state.compileMode))
+    val semicolon = Word(";", "Enters Compile Mode",
+      (state: State) => state.status match {
+        case CompileMode => state.valid
+        case status => state.abort(s"Dictionary Error: word ; is not valid on State $status")
+      })
     val number = Word("number", "Number-runner",
-      (state: State) => NumberRunner(state))
+      (state: State) => state) // TODO
     val execute = Word("execute", "Execute the definition of a word",
       (state: State) => Executor(state))
 
@@ -95,7 +108,7 @@ object Dictionary {
     val see = Word("see", "( -- )", (state: State) => {
       val word = state.input.last
       state.dictionary(word) match {
-        case Some(word) => state.abort(s"${word.function}")
+        case Some(word) => state.abort(s"${word}")
         case None => state.abort(s"Word $word undefined")
       }
     })
@@ -130,6 +143,7 @@ object Dictionary {
     Dictionary(Map[String, Word](
       interpret.load,
       compile.load,
+      semicolon.load,
       number.load,
       execute.load,
       plus.load,

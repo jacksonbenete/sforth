@@ -21,15 +21,15 @@ object TestUtils {
   }
 
   case class Engine(string: String, state: State) {
-    def interpreter(string: String): Engine = Interpreter(string)
+    def interpreter(string: String): Engine = Interpreter(string)(state)
 
-    def compiler(string: String): Engine = Compiler(string)
+    def compiler(string: String): Engine = Compiler(string)(state)
 
     def io: IO = this.state.io
     def output: String = this.state.io.raw.replace("\tok", "")
     def status: Status = this.state.status
     def stack: List[Int] = this.state.stack
-    def topStack: Int = this.stack.head
+    def topStack: Int = this.state.stack.head
     def dictionary: Dictionary = this.state.dictionary
     def stackSize: Int = this.state.stackSize
 
