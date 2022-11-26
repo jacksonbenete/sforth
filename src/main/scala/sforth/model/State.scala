@@ -7,7 +7,7 @@ object State {
   object StdOutput extends IODevice
 
   case class IO(data: List[String], device: IODevice = StdOutput) {
-    override def toString: String = data.mkString(" ")
+    override def toString: String = data.mkString("")
     def raw: String = this.data.mkString
     def debug: Unit = println(s">>>>\tIO data: ${this.data.mkString}\n>>>>\tIO device: ${this.device}")
   }
@@ -79,13 +79,7 @@ object State {
         registers = Registers())
     }
 
-    def look: State = {
-      stack.headOption match {
-        case None =>
-          this.stackUnderflow
-        case Some(data) => this.out(s"$data\t{${this.stackSize}}")
-      }
-    }
+    def look: Option[Int] = this.stack.headOption
 
     def stackSize: Int = this.stack.size
 

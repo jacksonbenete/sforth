@@ -26,7 +26,7 @@ object TestUtils {
     def compiler(string: String): Engine = Compiler(string)(state)
 
     def io: IO = this.state.io
-    def output: String = this.state.io.raw.replace("\tok", "")
+    def output: String = this.state.io.raw.replace("ok", "")
     def status: Status = this.state.status
     def stack: List[Int] = this.state.stack
     def topStack: Int = this.state.stack.head

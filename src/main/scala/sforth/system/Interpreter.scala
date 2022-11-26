@@ -33,8 +33,8 @@ object Interpreter {
     finalState.status match {
       // If it was still Interpreting until this point,
       // or returned successfully from Compiler, clean and return as Valid State
-      case InterpretMode => finalState.out("\tok").cleanState.valid
-      case CompileMode => finalState.out("\tok").cleanState.valid
+      case InterpretMode => finalState.out("ok").cleanState.valid
+      case CompileMode => finalState.out("ok").cleanState.valid
       case _ => finalState
     }
   }

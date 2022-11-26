@@ -86,14 +86,18 @@ object Dictionary {
     val dot = Word(".", "(n -- )", (state: State) => {
       val (data, nextState) = state.pop()
       (data, nextState.status) match {
-        case (Some(data), InterpretMode) => nextState.out(s"${data}\t{${nextState.stackSize}}")
-        case (Some(data), CompileMode) => nextState.out(s"${data}\t{${nextState.stackSize}}")
+        case (Some(data), InterpretMode) => nextState.out(s"$data ")
+        case (Some(data), CompileMode) => nextState.out(s"$data ")
         case (_, _) => nextState
       }
     })
 
     val look = Word(".s", "( -- )", (state: State) => {
-      state.look
+      state.look match {
+        case None =>
+          state.stackUnderflow
+        case Some(data) => state.out(s"$data {${state.stackSize}} ")
+      }
     })
 
     val dup = Word("dup", "(n -- n1 n2)", (state: State) => {
@@ -140,6 +144,9 @@ object Dictionary {
 
     val debug = Word("debug", "( -- )", (state: State) => { state.abort(s"DUMP: ${state.toString}") })
 
+    val doWord = Word("do", "(c -- ) requires LOOP", (state: State) => state, "")
+    val loopWord = Word("loop", "(c -- ) requires DO", (state: State) => state, "")
+
     Dictionary(Map[String, Word](
       interpret.load,
       compile.load,
@@ -158,7 +165,9 @@ object Dictionary {
       spaces.load,
       emit.load,
       cr.load,
-      debug.load
+      debug.load,
+      doWord.load,
+      loopWord.load
     ))
   }
 }

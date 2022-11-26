@@ -39,9 +39,12 @@ class Chapter1 extends AnyFunSuite{
 
     // Print F
     val addBar = doLoop.compiler(": bar   margin 5 stars ;")
-    assert(
-      addBar.interpreter("BAR BLIP BAR BLIP BLIP CR").output ==
-        "*****\r\n*\r\n*****\r\n*\r\n*\r\n")
+    val f1 = "\r\n                              *****"
+    val f2 = "\r\n                              *"
+    val f3 = "\r\n                              *****"
+    val f4 = "\r\n                              *"
+    val f5 = "\r\n                              *\r\n"
+    assert(addBar.interpreter("BAR BLIP BAR BLIP BLIP CR").output == f1 ++ f2 ++ f3 ++ f4 ++ f5)
   }
 
   // pg.14 The Dictionary
@@ -59,22 +62,23 @@ class Chapter1 extends AnyFunSuite{
     assert(addState.stackSize == 1)
 
     val dot = Interpreter("7 .")
-    assert(dot.output == "7")
+    assert(dot.output == "7 ")
     assert(dot.stackSize == 0)
 
     val composeWords = Interpreter("3 4 + .")
-    assert(composeWords.output == "7")
+    assert(composeWords.output == "7 ")
     assert(composeWords.stackSize == 0)
   }
 
   // pg.24 Keep Track of Your Stack
   test("testing stack output order and underflow") {
     val stackOrder = Interpreter("2 4 6 8 . . . .")
-    assert(stackOrder.output == "8 6 4 2")
+    assert(stackOrder.output == "8 6 4 2 ")
     assert(stackOrder.stackSize == 0)
 
     val stackUnderflow = Interpreter(".")
-    assert(stackUnderflow.output == "Stack-underflow")
+    // NOTE: REPL do prints "Stack-underflow", but not the Interpreter
+    //assert(stackUnderflow.output == "Stack-underflow")
     assert(stackUnderflow.status == StackUnderflow)
   }
 
@@ -103,5 +107,4 @@ class Chapter1 extends AnyFunSuite{
     // but compiled word should retain previous definition
     assert(problem2.interpreter("thanks").output != problem1.interpreter("thanks").output)
   }
-
 }
